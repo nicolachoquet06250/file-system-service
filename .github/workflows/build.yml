@@ -1,0 +1,93 @@
+name: Create release & Generate executables
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create_release:
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            Changes in this Release
+            ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false
+
+  create_dist:
+    name: Create dist directory
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create directory
+        run: mkdir ./dist
+
+  release-linux-gui-amd64:
+    name: release linux/amd64 gui app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: wangyoucao577/go-release-action@v1.49
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: linux
+          goarch: amd64
+          md5sum: false
+          binary_name: file-system-service-linux
+          retry: 3
+
+  release-windows-gui-amd64:
+    name: release windows/amd64 gui app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: wangyoucao577/go-release-action@v1.49
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: windows
+          goarch: amd64
+          md5sum: false
+          binary_name: file-system-service-windows
+          retry: 3
+          ldflags: "-H windowsgui"
+
+  release-darwin-gui-amd64:
+    name: release darwin/amd64 gui app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: wangyoucao577/go-release-action@v1.28
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: darwin
+          goarch: amd64
+          md5sum: false
+          binary_name: file-system-service-darwin-amd64
+          retry: 3
+
+  release-darwin-gui-arm64:
+    name: release darwin/arm64 gui app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: wangyoucao577/go-release-action@v1.28
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: darwin
+          goarch: arm64
+          md5sum: false
+          binary_name: file-system-service-darwin-arm64
+          retry: 3
