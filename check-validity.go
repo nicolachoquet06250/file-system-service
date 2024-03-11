@@ -9,7 +9,7 @@ type CheckValidity struct {
 	IsValid bool `json:"isValid"`
 }
 
-func checkValidity(writer http.ResponseWriter, request *http.Request) {
+func checkValidity(writer http.ResponseWriter) {
 	writer.Header().Add("Content-Type", "application/json")
 
 	response := &CheckValidity{true}
