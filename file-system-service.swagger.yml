@@ -1,0 +1,107 @@
+openapi: '3.0.2'
+
+info:
+  title: File system Service
+  version: 0.4.0
+
+servers:
+  - url: http://{host}:{port}
+    variables:
+      host:
+        default: 'localhost'
+      port:
+        default: '3000'
+        description: Port where is exposed service.
+
+components:
+  schemas:
+    HttpError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: integer
+        message:
+          type: string
+
+    FileSystemItem:
+      type: object
+      properties:
+        type:
+          type: string
+        path:
+          type: string
+        name:
+          type: string
+
+tags:
+  - name: File System
+    description: All concerns file system.
+  - name: Files
+    description: All concerns files.
+  - name: Directories
+    description: All concerns directories.
+
+paths:
+  /file-system/{path}:
+    summary: Get all content of directory (flat)
+    description: Get all elements in search directory (in {path})
+
+    parameters:
+      - name: path
+        required: true
+        in: path
+        description: Path of file to get.
+        schema:
+          type: string
+        explode: true
+        style: simple
+        example: "home\/nchoquet"
+
+    get:
+      tags:
+        - File System
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FileSystemItem'
+
+        '400':
+          description: Bad Request
+          # headers:
+            
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  
+  /file-system:
+    summary: Get all content of root directory (flat)
+    description: Get all elements in search directory (in root of your system)
+    
+    get:
+      tags:
+        - File System
+        
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FileSystemItem'
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
