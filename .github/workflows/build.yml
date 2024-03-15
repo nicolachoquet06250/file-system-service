@@ -1,4 +1,5 @@
 name: Create release & Generate executables
+permissions: write-all
 
 on:
   push:
