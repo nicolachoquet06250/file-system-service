@@ -8,7 +8,7 @@ Création d'un service en Go pour pouvoir m'y connecter via mon portfolio-apple 
 #### Check Validity
 
 ```http request
-  GET /check-validity
+GET /check-validity
 ```
 
 ##### Response 200
@@ -22,7 +22,7 @@ Création d'un service en Go pour pouvoir m'y connecter via mon portfolio-apple 
 #### Get directory list content items
 
 ```http request
-  GET /file-system/${path...}
+GET /file-system/${path...}
 ```
 
 | Parameter | Type     | Description                | Default value |
@@ -192,7 +192,7 @@ Accept: application/json
 #### Create file with content
 
 ```http request
-  POST http://localhost:3000/file
+POST http://localhost:3000/file
 Accept: application/json
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -241,7 +241,7 @@ Ceci est un test
 #### Create file without content
 
 ```http request
-  POST http://localhost:3000/file
+POST http://localhost:3000/file
 Accept: application/json
 Content-Type: application/json
 
@@ -279,7 +279,7 @@ Content-Type: application/json
 #### Get file content
 
 ```http request
-  GET /file/${path...}
+GET /file/${path...}
 Accept: application/json
 ```
 
