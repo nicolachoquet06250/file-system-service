@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	fs "filesystem_service/customFs"
 	"net/http"
+	"strings"
 )
 
 func renameDirectory(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
 	var body fs.Directory
@@ -21,7 +23,7 @@ func renameDirectory(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	path := "/" + request.PathValue("path")
+	path := "/" + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 
 	d := fs.NewDirectory(path)
 	nd := fs.NewDirectory(fs.BuildDirectoryCompletePath(body))

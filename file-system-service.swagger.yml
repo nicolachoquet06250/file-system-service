@@ -1,0 +1,502 @@
+openapi: '3.0.2'
+
+info:
+  title: File system Service
+  version: 0.4.0
+
+servers:
+  - url: http://{host}:{port}
+    variables:
+      host:
+        default: 'localhost'
+      port:
+        default: '3000'
+        description: Port where is exposed service.
+
+components:
+  requestBodies:
+    FileSystemItem:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FileSystemItem'
+
+  schemas:
+    ValidityChecked:
+      description: Validity checked
+      type: object
+      properties:
+        isValid:
+          type: boolean
+          enum:
+            - true
+            - false
+
+    HttpError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: integer
+        message:
+          type: string
+
+    FileSystemItem:
+      type: object
+      required:
+        - type
+        - path
+        - name
+      properties:
+        type:
+          type: string
+          enum:
+            - "file"
+            - "directory"
+        path:
+          type: string
+        name:
+          type: string
+        "symlink":
+          type: string
+        extension:
+          type: string
+          enum:
+            - ""
+            - ".txt"
+            - ".pdf"
+            - ".json"
+            - ".xml"
+
+    ResponseStatus:
+      type: object
+      properties:
+        status:
+          enum:
+            - "success"
+            - "error"
+
+tags:
+  - name: File System
+    description: All concerns file system.
+  - name: Files
+    description: All concerns files.
+  - name: Directories
+    description: All concerns directories.
+
+paths:
+  /check-validity:
+    get:
+      description: New endpoint
+      responses:
+        '200':
+          description: Validated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidityChecked'
+
+  /file-system/{path}:
+    summary: Get all content of directory (flat)
+    description: Get all elements in search directory (in {path})
+
+    parameters:
+      - name: path
+        description: Path of file to get.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: path
+          default: home/nchoquet
+        style: simple
+        example: home/nchoquet
+
+    get:
+      tags:
+        - File System
+
+      responses:
+        '200':
+          description: OK
+
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FileSystemItem'
+
+        '400':
+          description: Bad Request
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  
+  /file-system:
+    summary: Get all content of root directory (flat)
+    description: Get all elements in search directory (in root of your system)
+    
+    get:
+      tags:
+        - File System
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FileSystemItem'
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+  /directory:
+    summary: Create new directory
+    description: Create new directory
+
+    post:
+      tags:
+        - Directories
+
+      requestBody:
+        $ref: '#/components/requestBodies/FileSystemItem'
+
+      responses:
+        '200':
+          description: OK
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileSystemItem'
+
+        '400':
+          description: Bad Request
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+        '404':
+          description: Not found
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+  /directory/{path}:
+    parameters:
+      - name: path
+        description: Path of file to rename.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: path
+          default: home/nchoquet
+        style: simple
+        example: home/nchoquet
+
+    patch:
+      summary: Rename selected directory
+      description: Rename selected directory
+
+      tags:
+        - Directories
+
+      requestBody:
+        $ref: '#/components/requestBodies/FileSystemItem'
+
+      responses:
+        '200':
+          description: OK
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileSystemItem'
+
+        '400':
+          description: Bad Request
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+        '404':
+          description: Not Found
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+    delete:
+      summary: Delete a directory
+      description: Delete a directory
+
+      tags:
+        - Directories
+
+      responses:
+        '200':
+          description: OK
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseStatus'
+
+        '400':
+          description: Bad Request
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseStatus'
+
+        '404':
+          description: Not Found
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseStatus'
+
+  /file:
+    summary: Create new file
+    description: Create new file with or without content
+
+    post:
+      tags:
+        - Files
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: # part 1 (file)
+                  allOf:
+                    - $ref: '#/components/requestBodies/FileSystemItem'
+                content: # part 2 (content)
+                  oneOf:
+                    - type: object
+                    - type: array
+                    - type: string
+                    - type: string
+                      format: binary
+
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FileSystemItem'
+
+      responses:
+        '200':
+          description: OK
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseStatus'
+
+        '400':
+          description: Bad Request
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+  /file/{path}:
+    parameters:
+      - name: path
+        description: Path of file to rename.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: path
+          default: home/nchoquet
+        style: simple
+        example: home/nchoquet
+
+    get:
+      summary: Get selected file content
+      description: Get selected file content
+
+      tags:
+        - Files
+
+      responses:
+        '200':
+          description: OK
+
+          content:
+            application/json:
+              schema:
+                type: object
+
+            text/xml:
+              schema:
+                type: string
+
+            text/plain:
+              schema:
+                type: string
+
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+        '400':
+          description: Bad Request
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+        '404':
+          description: Not Found
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+    patch:
+      summary: Rename selected file
+      description: Rename selected file
+
+      tags:
+        - Files
+
+      requestBody:
+        $ref: '#/components/requestBodies/FileSystemItem'
+
+      responses:
+        '200':
+          description: OK
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileSystemItem'
+
+        '400':
+          description: Bad Request
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+        '404':
+          description: Not Found
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+    put:
+      description: Update file content
+      summary: Update file content
+
+      tags:
+        - Files
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                - type: array
+
+          text/plain:
+            schema:
+              type: string
+
+          application/xml:
+            schema:
+              type: string
+
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+
+      responses:
+        '200':
+          description: OK
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseStatus'
+
+        '400':
+          description: Bad Request
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+        '404':
+          description: Not Found
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+    delete:
+      description: Delete selected file
+      summary: Delete selected file
+
+      tags:
+        - Files
+
+      responses:
+        '200':
+          description: OK
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseStatus'
+
+        '400':
+          description: Bad Request
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+        '404':
+          description: Not Found
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'

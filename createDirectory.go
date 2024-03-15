@@ -7,6 +7,7 @@ import (
 )
 
 func createDirectory(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
 	var body fs.Directory
