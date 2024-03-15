@@ -54,9 +54,7 @@ func main() {
 	server.HandleFunc("/file-system/{path...}", getFileSystem) // ok
 
 	server.HandleFunc("POST /directory", createDirectory)             // ok
-	server.HandleFunc("PATCH /directory", renameDirectory)            // ok
 	server.HandleFunc("PATCH /directory/{path...}", renameDirectory)  // ok
-	server.HandleFunc("DELETE /directory", deleteDirectory)           // ok
 	server.HandleFunc("DELETE /directory/{path...}", deleteDirectory) // ok
 
 	server.HandleFunc("/file/{path...}", getFileContent)        // ok

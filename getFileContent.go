@@ -5,10 +5,13 @@ import (
 	fs "filesystem_service/customFs"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 func getFileContent(writer http.ResponseWriter, request *http.Request) {
-	path := "/" + request.PathValue("path")
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+
+	path := "/" + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 	file := fs.NewFile(path)
 
 	_, err := file.IsFile()

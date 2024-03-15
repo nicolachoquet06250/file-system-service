@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	fs "filesystem_service/customFs"
 	"net/http"
+	"strings"
 )
 
 func deleteFile(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
-	path := "/" + request.PathValue("path")
+	path := "/" + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 
 	f := fs.NewFile(path)
 

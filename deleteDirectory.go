@@ -4,13 +4,15 @@ import (
 	"encoding/json"
 	fs "filesystem_service/customFs"
 	"net/http"
+	"strings"
 )
 
 func deleteDirectory(writer http.ResponseWriter, request *http.Request) {
-	isForce := request.URL.Query().Has("force")
 	writer.Header().Add("Content-Type", "application/json")
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	isForce := request.URL.Query().Has("force")
 
-	path := "/" + request.PathValue("path")
+	path := "/" + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 
 	d := fs.NewDirectory(path)
 

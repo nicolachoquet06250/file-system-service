@@ -10,6 +10,7 @@ type CheckValidity struct {
 }
 
 func checkValidity(writer http.ResponseWriter, _request *http.Request) {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
 	response := &CheckValidity{true}
