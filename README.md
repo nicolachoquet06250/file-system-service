@@ -2,6 +2,50 @@
 
 Création d'un service en Go pour pouvoir m'y connecter via mon portfolio-apple et interagire avec le système de fichier via l'IHM.
 
+## Quick start
+### Installation
+
+#### Linux & MacOSX
+##### Get Last Swagger
+```shell
+wget https://github.com/nicolachoquet06250/file-system-service/releases/download/$(curl https://api.github.com/repos/nicolachoquet06250/file-system-service/releases | jq .[0].name | sed 's/.\(.*\)/\1/' | sed 's/\(.*\)./\1/')/file-system-service.swagger.yml
+```
+
+#### Linux
+##### Get Last binary
+```shell
+last_version="$(curl https://api.github.com/repos/nicolachoquet06250/file-system-service/releases | jq .[0].name | sed 's/.\(.*\)/\1/' | sed 's/\(.*\)./\1/')" && \
+  wget -c https://github.com/nicolachoquet06250/file-system-service/releases/download/${last_version}/file-system-service-linux-${last_version}-linux-amd64.tar.gz && \
+  tar -xf file-system-service-linux-${last_version}-linux-amd64.tar.gz && \
+  rm file-system-service-linux-${last_version}-linux-amd64.tar.gz
+```
+
+#### MacOSX amd64
+##### Get Last binary
+```shell
+last_version="$(curl https://api.github.com/repos/nicolachoquet06250/file-system-service/releases | jq .[0].name | sed 's/.\(.*\)/\1/' | sed 's/\(.*\)./\1/')" && \
+  wget -c https://github.com/nicolachoquet06250/file-system-service/releases/download/${last_version}/file-system-service-darwin-${last_version}-darwin-amd64.tar.gz && \
+  tar -xf file-system-service-darwin-${last_version}-darwin-amd64.tar.gz && \
+  rm file-system-service-darwin-${last_version}-darwin-amd64.tar.gz
+```
+
+#### MacOSX arm64
+##### Get Last binary
+```shell
+last_version="$(curl https://api.github.com/repos/nicolachoquet06250/file-system-service/releases | jq .[0].name | sed 's/.\(.*\)/\1/' | sed 's/\(.*\)./\1/')" && \
+  wget -c https://github.com/nicolachoquet06250/file-system-service/releases/download/${last_version}/file-system-service-darwin-${last_version}-darwin-arm64.tar.gz && \
+  tar -xf file-system-service-darwin-${last_version}-darwin-arm64.tar.gz && \
+  rm file-system-service-darwin-${last_version}-darwin-arm64.tar.gz
+```
+
+#### Windows
+https://github.com/nicolachoquet06250/file-system-service/releases/latest
+
+##### Get Last Swagger
+Click on `file-system-service.swagger.yml`
+
+##### Get Last binary
+Click on `file-system-service-windows-{version}-windows-amd64.zip`
 
 ## API Reference
 
