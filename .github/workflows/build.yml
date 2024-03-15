@@ -31,7 +31,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: file-system-service.swagger.yml
+          asset_path: ./file-system-service.swagger.yml
 
   create_dist:
     name: Create dist directory
