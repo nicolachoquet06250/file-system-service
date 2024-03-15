@@ -28,7 +28,7 @@ jobs:
       - name: Add Swagger to release
         uses: shogo82148/actions-upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: file-system-service.swagger.yml
