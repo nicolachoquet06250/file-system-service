@@ -26,6 +26,7 @@ func getMultipartKeys(request *http.Request) (file fs.File, content string, err 
 }
 
 func createFile(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
 	file, content, err := getMultipartKeys(request)

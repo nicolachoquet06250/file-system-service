@@ -5,14 +5,16 @@ import (
 	fs "filesystem_service/customFs"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func renameFile(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
 	var renamedFile fs.File
 
-	path := "/" + request.PathValue("path")
+	path := "/" + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 
 	if err := json.NewDecoder(request.Body).Decode(&renamedFile); err != nil {
 		writer.WriteHeader(400)
@@ -43,9 +45,10 @@ func renameFile(writer http.ResponseWriter, request *http.Request) {
 }
 
 func updateFileContent(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
-	path := "/" + request.PathValue("path")
+	path := "/" + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 
 	var body []byte
 
