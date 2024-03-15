@@ -25,6 +25,8 @@ jobs:
             ${{ github.event.head_commit.message }}
           draft: false
           prerelease: false
+      - run: |
+          pwd && ls
       - name: Add Swagger to release
         uses: shogo82148/actions-upload-release-asset@v1
         env:
