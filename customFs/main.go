@@ -1,3 +1,3 @@
 package customFs
 
-const ROOT = "/"
+var ROOT = "/"
