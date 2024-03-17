@@ -13,14 +13,7 @@ import (
 func GetFileContent(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 
-	if _, err := auth.CheckToken(request); err != nil {
-		writer.Header().Add("Content-Type", "application/json")
-		writer.WriteHeader(403)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    403,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+	if !auth.IsAuthorized(writer, request) {
 		return
 	}
 
