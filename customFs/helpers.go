@@ -27,7 +27,7 @@ func getParentPath(path string) string {
 
 	finalPath := strings.Join(parts[0:len(parts)-1], "/")
 	if finalPath == "" {
-		finalPath = ROOT + finalPath
+		finalPath = GetRoot() + finalPath
 	}
 	return finalPath
 }

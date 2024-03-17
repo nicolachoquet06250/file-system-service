@@ -26,7 +26,7 @@ func RenameFile(writer http.ResponseWriter, request *http.Request) {
 
 	var renamedFile fs.File
 
-	path := fs.ROOT + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
+	path := fs.GetRoot() + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 
 	if err := json.NewDecoder(request.Body).Decode(&renamedFile); err != nil {
 		writer.WriteHeader(400)
@@ -70,7 +70,7 @@ func UpdateFileContent(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	path := fs.ROOT + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
+	path := fs.GetRoot() + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 
 	var body []byte
 

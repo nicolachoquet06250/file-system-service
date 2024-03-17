@@ -23,7 +23,7 @@ func DeleteFile(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	path := fs.ROOT + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
+	path := fs.GetRoot() + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 
 	f := fs.NewFile(path)
 

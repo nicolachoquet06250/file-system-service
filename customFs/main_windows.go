@@ -1,3 +1,5 @@
 package customFs
 
-var ROOT = "C://"
+func GetRoot() string {
+	return "C://"
+}
