@@ -1,8 +1,10 @@
 package auth
 
 import (
+	"encoding/json"
 	"filesystem_service/customHttp"
 	"filesystem_service/data"
+	"filesystem_service/types"
 	"fmt"
 	"net/http"
 	"strings"
@@ -47,4 +49,17 @@ func CheckToken(request *http.Request) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func IsAuthorized(writer http.ResponseWriter, request *http.Request) bool {
+	if _, err := CheckToken(request); err != nil {
+		writer.WriteHeader(403)
+		response, _ := json.Marshal(&types.HttpError{
+			Code:    403,
+			Message: err.Error(),
+		})
+		_, _ = writer.Write(response)
+		return false
+	}
+	return true
 }

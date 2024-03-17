@@ -2,6 +2,7 @@ package directories
 
 import (
 	"encoding/json"
+	"filesystem_service/auth"
 	fs "filesystem_service/customFs"
 	"filesystem_service/types"
 	"net/http"
@@ -11,6 +12,10 @@ import (
 func DeleteDirectory(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Add("Content-Type", "application/json")
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
+
+	if !auth.IsAuthorized(writer, request) {
+		return
+	}
 
 	isForce := request.URL.Query().Has("force")
 
