@@ -1,70 +1,55 @@
 package main
 
 import (
-	"flag"
+	"filesystem_service/actions"
+	"filesystem_service/auth"
+	"filesystem_service/customHttp"
+	"filesystem_service/directories"
+	"filesystem_service/files"
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
-	"strings"
+	"os/signal"
+	"syscall"
+
+	_ "modernc.org/sqlite"
 )
 
-type HttpError struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
-type ResponseStatus struct {
-	Status string `json:"status"`
-}
-
-func getAddr(host *string, port *int, hostEnv *string, portEnv *string) string {
-	if hostEnv != nil {
-		if envHost := os.Getenv(*hostEnv); envHost != "" {
-			*host = envHost
-		}
-	}
-	if portEnv != nil {
-		if envPort := os.Getenv(*portEnv); envPort != "" {
-			*port, _ = strconv.Atoi(envPort)
-		}
-	}
-
-	if host != nil && strings.Contains(*host, ":") {
-		*host = fmt.Sprintf("[%s]", *host)
-	}
-
-	return *host + ":" + strconv.Itoa(*port)
-}
-
 func main() {
-	port := flag.Int("port", 3000, "Port d'exposition de l'application.")
-	host := flag.String("host", "127.0.0.1", "Domaine ou IP de la machine qui expose le sercice.")
+	if !actions.Exec() {
+		addr := customHttp.GetAddr()
 
-	portEnvVar := flag.String("portEnv", "", "Variable d'environement où trouver le port d'exposition de l'application.")
-	hostEnvVar := flag.String("hostEnv", "", "Variable d'environement où trouver le domaine ou l'IP de la machine qui expose le sercice.")
-	flag.Parse()
+		server := http.NewServeMux()
 
-	addr := getAddr(host, port, hostEnvVar, portEnvVar)
+		server.HandleFunc("/check-validity", CheckValidity) // ok
 
-	server := http.NewServeMux()
+		server.HandleFunc("POST /auth/get-token", auth.GetToken)
+		server.HandleFunc("PUT /auth/get-token", auth.RefreshToken)
 
-	server.HandleFunc("/check-validity", checkValidity) // ok
+		server.HandleFunc("/file-system/{path...}", directories.GetFileSystem) // ok
 
-	server.HandleFunc("/file-system/{path...}", getFileSystem) // ok
+		server.HandleFunc("POST /directory", directories.CreateDirectory)             // ok
+		server.HandleFunc("PATCH /directory/{path...}", directories.RenameDirectory)  // ok
+		server.HandleFunc("DELETE /directory/{path...}", directories.DeleteDirectory) // ok
 
-	server.HandleFunc("POST /directory", createDirectory)             // ok
-	server.HandleFunc("PATCH /directory/{path...}", renameDirectory)  // ok
-	server.HandleFunc("DELETE /directory/{path...}", deleteDirectory) // ok
+		server.HandleFunc("/file/{path...}", files.GetFileContent)        // ok
+		server.HandleFunc("POST /file", files.CreateFile)                 // ok
+		server.HandleFunc("PATCH /file/{path...}", files.RenameFile)      // ok
+		server.HandleFunc("PUT /file/{path...}", files.UpdateFileContent) // ok
+		server.HandleFunc("DELETE /file/{path...}", files.DeleteFile)     // ok
 
-	server.HandleFunc("/file/{path...}", getFileContent)        // ok
-	server.HandleFunc("POST /file", createFile)                 // ok
-	server.HandleFunc("PATCH /file/{path...}", renameFile)      // ok
-	server.HandleFunc("PUT /file/{path...}", updateFileContent) // ok
-	server.HandleFunc("DELETE /file/{path...}", deleteFile)     // ok
+		c := make(chan os.Signal)
+		signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+		go func() {
+			<-c
+			println("\b\bNous fermons le serveur.")
+			// Run Cleanup
+			os.Exit(0)
+		}()
 
-	fmt.Printf("Listening on http://%s", addr)
-	if err := http.ListenAndServe(addr, server); err != nil {
-		println(err)
+		fmt.Printf("Listening on http://%s\n", addr)
+		if err := http.ListenAndServe(addr, server); err != nil {
+			println(err)
+		}
 	}
 }

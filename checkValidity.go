@@ -2,18 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"filesystem_service/types"
 	"net/http"
 )
 
-type CheckValidity struct {
-	IsValid bool `json:"isValid"`
-}
-
-func checkValidity(writer http.ResponseWriter, request *http.Request) {
+func CheckValidity(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
-	response := &CheckValidity{true}
+	response := &types.CheckValidity{true}
 
 	_json, err := json.Marshal(response)
 	if err != nil {

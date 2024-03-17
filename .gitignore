@@ -1,2 +1,4 @@
 .idea/
 .dist/
+
+file-system-service-oauth.sqlite

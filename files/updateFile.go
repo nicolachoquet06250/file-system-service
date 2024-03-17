@@ -1,24 +1,36 @@
-package main
+package files
 
 import (
 	"encoding/json"
+	"filesystem_service/auth"
 	fs "filesystem_service/customFs"
+	"filesystem_service/types"
 	"io"
 	"net/http"
 	"strings"
 )
 
-func renameFile(writer http.ResponseWriter, request *http.Request) {
+func RenameFile(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
+	if _, err := auth.CheckToken(request); err != nil {
+		writer.WriteHeader(403)
+		response, _ := json.Marshal(&types.HttpError{
+			Code:    403,
+			Message: err.Error(),
+		})
+		_, _ = writer.Write(response)
+		return
+	}
+
 	var renamedFile fs.File
 
-	path := "/" + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
+	path := fs.ROOT + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 
 	if err := json.NewDecoder(request.Body).Decode(&renamedFile); err != nil {
 		writer.WriteHeader(400)
-		response, _ := json.Marshal(&HttpError{
+		response, _ := json.Marshal(&types.HttpError{
 			Code:    400,
 			Message: err.Error(),
 		})
@@ -30,7 +42,7 @@ func renameFile(writer http.ResponseWriter, request *http.Request) {
 
 	if _, err := f.Rename(fs.NewFile(fs.BuildFileCompletePath(renamedFile))); err != nil {
 		writer.WriteHeader(400)
-		response, _ := json.Marshal(&HttpError{
+		response, _ := json.Marshal(&types.HttpError{
 			Code:    400,
 			Message: err.Error(),
 		})
@@ -38,17 +50,27 @@ func renameFile(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	response, _ := json.Marshal(&ResponseStatus{
+	response, _ := json.Marshal(&types.ResponseStatus{
 		Status: "success",
 	})
 	_, _ = writer.Write(response)
 }
 
-func updateFileContent(writer http.ResponseWriter, request *http.Request) {
+func UpdateFileContent(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
-	path := "/" + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
+	if _, err := auth.CheckToken(request); err != nil {
+		writer.WriteHeader(403)
+		response, _ := json.Marshal(&types.HttpError{
+			Code:    403,
+			Message: err.Error(),
+		})
+		_, _ = writer.Write(response)
+		return
+	}
+
+	path := fs.ROOT + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 
 	var body []byte
 
@@ -57,7 +79,7 @@ func updateFileContent(writer http.ResponseWriter, request *http.Request) {
 	text, err := io.ReadAll(request.Body)
 	if err != nil {
 		writer.WriteHeader(400)
-		response, _ := json.Marshal(&HttpError{
+		response, _ := json.Marshal(&types.HttpError{
 			Code:    400,
 			Message: err.Error(),
 		})
@@ -68,7 +90,7 @@ func updateFileContent(writer http.ResponseWriter, request *http.Request) {
 
 	if _, err = f.SetContent(body); err != nil {
 		writer.WriteHeader(400)
-		response, _ := json.Marshal(&HttpError{
+		response, _ := json.Marshal(&types.HttpError{
 			Code:    400,
 			Message: err.Error(),
 		})
@@ -76,7 +98,7 @@ func updateFileContent(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	response, _ := json.Marshal(&ResponseStatus{
+	response, _ := json.Marshal(&types.ResponseStatus{
 		Status: "success",
 	})
 	_, _ = writer.Write(response)

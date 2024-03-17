@@ -1,4 +1,4 @@
-package main
+package files
 
 var fileFormats = map[string]string{
 	".json": "application/json",

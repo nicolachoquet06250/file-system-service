@@ -1,8 +1,8 @@
-openapi: '3.0.2'
+openapi: '3.0.3'
 
 info:
   title: File system Service
-  version: 0.4.0
+  version: 0.9.0
 
 servers:
   - url: http://{host}:{port}
@@ -77,7 +77,21 @@ components:
             - "success"
             - "error"
 
+    AccessToken:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        created_at:
+          type: integer
+        expires_in:
+          type: integer
+
 tags:
+  - name: Auth
+    description: API Authentication
   - name: File System
     description: All concerns file system.
   - name: Files
@@ -86,6 +100,72 @@ tags:
     description: All concerns directories.
 
 paths:
+  /auth/get-token:
+    post:
+      tags:
+        - Auth
+      description: Create first token
+      parameters:
+        - name: Signature-Token
+          in: header
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Get token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        '400':
+          description: Get token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Get token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+    put:
+      tags:
+        - Auth
+      description: Create new token from refresh token
+      parameters:
+        - name: Signature-Token
+          in: header
+          schema:
+            type: string
+          required: true
+        - name: Refresh-Token
+          in: header
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Get token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        '400':
+          description: Get token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Get token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
   /check-validity:
     get:
       description: New endpoint
@@ -135,6 +215,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpError'
+
+        '403':
+          description: Unauthorized
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
   
   /file-system:
     summary: Get all content of root directory (flat)
@@ -156,6 +244,14 @@ paths:
 
         '400':
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+        '403':
+          description: Unauthorized
+
           content:
             application/json:
               schema:
@@ -191,6 +287,14 @@ paths:
 
         '404':
           description: Not found
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+        '403':
+          description: Unauthorized
 
           content:
             application/json:
@@ -245,6 +349,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/HttpError'
 
+        '403':
+          description: Unauthorized
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
     delete:
       summary: Delete a directory
       description: Delete a directory
@@ -276,6 +388,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseStatus'
+
+        '403':
+          description: Unauthorized
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
 
   /file:
     summary: Create new file
@@ -317,6 +437,14 @@ paths:
 
         '400':
           description: Bad Request
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+        '403':
+          description: Unauthorized
 
           content:
             application/json:
@@ -375,6 +503,14 @@ paths:
 
         '404':
           description: Not Found
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+        '403':
+          description: Unauthorized
 
           content:
             application/json:

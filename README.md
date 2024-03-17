@@ -47,6 +47,11 @@ Click on `file-system-service.swagger.yml`
 ##### Get Last binary
 Click on `file-system-service-windows-{version}-windows-amd64.zip`
 
+#### Generate Signature token
+```shell
+file-system-service --generate-signature
+```
+
 ## API Reference
 
 #### Check Validity
@@ -60,6 +65,79 @@ GET /check-validity
 ```json
 {
   "isValid": true
+}
+```
+
+#### Authentification
+
+##### Get first token
+
+```http request
+POST /auth/get-token
+Accept: application/json
+Content-Type: application/json
+Signature-Token: {generated-signature}
+```
+###### Response 200
+
+```json
+{
+  "access_token": "string",
+  "refresh_token": "string",
+  "expires_in": "int",
+  "created_at": "int"
+}
+```
+###### Response 400
+
+```json
+{
+  "code": 400,
+  "message": "string"
+}
+```
+###### Response 500
+
+```json
+{
+  "code": 500,
+  "message": "string"
+}
+```
+
+##### Refresh token
+
+```http request
+PUT /auth/get-token
+Accept: application/json
+Content-Type: application/json
+Signature-Token: {generated-signature}
+Refresh-Token: {getted-refresh-token}
+```
+###### Response 200
+
+```json
+{
+  "access_token": "string",
+  "refresh_token": "string",
+  "expires_in": "int",
+  "created_at": "int"
+}
+```
+###### Response 400
+
+```json
+{
+  "code": 400,
+  "message": "string"
+}
+```
+###### Response 500
+
+```json
+{
+  "code": 500,
+  "message": "string"
 }
 ```
 
@@ -109,6 +187,15 @@ GET /file-system/${path...}
 }
 ```
 
+##### Response 403
+
+```json
+{
+  "code": 403,
+  "message": "an error message"
+}
+```
+
 #### Create a directory
 
 ```http request
@@ -145,6 +232,15 @@ Content-Type: application/json
 ```json
 {
   "code": 404,
+  "message": "an error message"
+}
+```
+
+##### Response 403
+
+```json
+{
+  "code": 403,
   "message": "an error message"
 }
 ```
@@ -195,6 +291,15 @@ Content-Type: application/json
 }
 ```
 
+##### Response 403
+
+```json
+{
+  "code": 403,
+  "message": "an error message"
+}
+```
+
 #### Delete directory
 
 ```http request
@@ -229,6 +334,15 @@ Accept: application/json
 ```json
 {
   "code": 404,
+  "message": "an error message"
+}
+```
+
+##### Response 403
+
+```json
+{
+  "code": 403,
   "message": "an error message"
 }
 ```
@@ -282,6 +396,15 @@ Ceci est un test
 | :-------- | :------- | :-------------------------------- | :------------ |
 | `path`    | `string` | **Optional**. The path of the directory you would like open | / |
 
+##### Response 403
+
+```json
+{
+  "code": 403,
+  "message": "an error message"
+}
+```
+
 #### Create file without content
 
 ```http request
@@ -320,6 +443,15 @@ Content-Type: application/json
 | :-------- | :------- | :-------------------------------- | :------------ |
 | `path`    | `string` | **Optional**. The path of the directory you would like open | / |
 
+##### Response 403
+
+```json
+{
+  "code": 403,
+  "message": "an error message"
+}
+```
+
 #### Get file content
 
 ```http request
@@ -353,6 +485,15 @@ Accept: application/json
 ```json
 {
   "code": 404,
+  "message": "an error message"
+}
+```
+
+##### Response 403
+
+```json
+{
+  "code": 403,
   "message": "an error message"
 }
 ```
@@ -405,6 +546,15 @@ Content-Type: application/json
 }
 ```
 
+##### Response 403
+
+```json
+{
+  "code": 403,
+  "message": "an error message"
+}
+```
+
 #### Update selected file content
 
 ```http request
@@ -442,6 +592,15 @@ the fichier
 }
 ```
 
+##### Response 403
+
+```json
+{
+  "code": 403,
+  "message": "an error message"
+}
+```
+
 #### Delete selected file
 
 ```http request
@@ -471,6 +630,16 @@ Accept: application/json
 ```json
 {
   "code": 404,
+  "message": "an error message"
+}
+```
+
+
+##### Response 403
+
+```json
+{
+  "code": 403,
   "message": "an error message"
 }
 ```
