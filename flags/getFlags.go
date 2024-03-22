@@ -1,6 +1,10 @@
 package flags
 
-import "flag"
+import (
+	"flag"
+	"os"
+	"regexp"
+)
 
 var port = flag.Int("port", 3000, "Port d'exposition de l'application.")
 var host = flag.String("host", "127.0.0.1", "Domaine ou IP de la machine qui expose le sercice.")
@@ -15,6 +19,14 @@ var showUserRole = flag.Bool("show-user-role", false, "Active l'option de d'affi
 var showRoles = flag.Bool("show-roles", false, "Afficher la liste des rôles disponibles.")
 var role = flag.String("role", "readonly", "Rensègne le rôle selectionné.")
 var clientId = flag.String("client_id", "", "Rensègne le client_id.")
+
+var isBuiltVersion = func() bool {
+	isMatch := true
+	for _, _ = range regexp.MustCompile(`(?m)/go-build[0-9]*`).FindAllString(os.Args[0], -1) {
+		isMatch = false
+	}
+	return isMatch
+}()
 
 func GetFlags() Flags {
 	if !flag.Parsed() {
@@ -33,4 +45,8 @@ func GetFlags() Flags {
 		role,
 		clientId,
 	}
+}
+
+func IsProd() bool {
+	return isBuiltVersion
 }

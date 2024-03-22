@@ -2,10 +2,30 @@ package database
 
 import (
 	"database/sql"
+	"filesystem_service/flags"
+	"fmt"
+	"os"
+	"strings"
 )
 
+var databaseFileName = "file-system-service-oauth.sqlite"
+
+func checkFatalPermissionDenied(err error) {
+	if strings.Contains(err.Error(), "readonly database") {
+		fmt.Printf("La base de données est en lecture seule car vous n'avez pas les droit d'écriture.\n")
+		fmt.Printf("Lancer le service en sudo pour avoir les droits d'écriture.\n\n")
+		fmt.Printf("sudo %v\n", strings.Join(os.Args, " "))
+		os.Exit(2)
+	}
+}
+
 func Connect() (*sql.DB, error) {
-	return sql.Open("sqlite", "./file-system-service-oauth.sqlite")
+	path := "."
+	if flags.IsProd() {
+		path = prodPath
+	}
+
+	return sql.Open("sqlite", path+"/"+databaseFileName)
 }
 
 func Init() (*sql.DB, error) {
@@ -30,6 +50,7 @@ func Init() (*sql.DB, error) {
                                                               (7, 'delete_file'),
                                                               (8, 'rename_file'),
                                                               (9, 'update_file_content');`); err != nil {
+		checkFatalPermissionDenied(err)
 		return nil, err
 	}
 
@@ -43,15 +64,16 @@ func Init() (*sql.DB, error) {
 	if _, err = db.Exec(`INSERT OR IGNORE INTO roles (id, role_name, active) VALUES
                                                         (1, 'readwrite', TRUE),
                                                         (2, 'readonly', TRUE);`); err != nil {
+		checkFatalPermissionDenied(err)
 		return nil, err
 	}
 
 	if _, err = db.Exec(`CREATE TABLE IF NOT EXISTS roles_link_role_actions (
-		role_name VARCHAR(255) NOT NULL,
-		role_action_name VARCHAR(255) NOT NULL,
-		PRIMARY KEY (role_name, role_action_name),
-		FOREIGN KEY (role_name) REFERENCES roles(role_name),
-		FOREIGN KEY (role_action_name) REFERENCES role_actions(role_action_name)
+		role INTEGER NOT NULL,
+		role_action INTEGER NOT NULL,
+		PRIMARY KEY (role, role_action),
+		FOREIGN KEY (role) REFERENCES roles(id),
+		FOREIGN KEY (role_action) REFERENCES role_actions(id)
 	);`); err != nil {
 		return nil, err
 	}
@@ -67,6 +89,7 @@ func Init() (*sql.DB, error) {
                                                         (1, 9),
                                                         (2, 1),
                                                         (2, 5);`); err != nil {
+		checkFatalPermissionDenied(err)
 		return nil, err
 	}
 

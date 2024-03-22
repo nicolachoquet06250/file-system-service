@@ -32,7 +32,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./file-system-service.swagger.yml
+          asset_path: ./swagger/swagger.yaml
 
   create_dist:
     name: Create dist directory
@@ -43,7 +43,7 @@ jobs:
       - name: Create directory
         run: mkdir ./dist
 
-  release-linux-gui-amd64:
+  release-linux-amd64:
     name: release linux/amd64
     runs-on: ubuntu-latest
     steps:
@@ -57,7 +57,7 @@ jobs:
           binary_name: file-system-service-linux
           retry: 3
 
-  release-windows-gui-amd64:
+  release-windows-amd64:
     name: release windows/amd64
     runs-on: ubuntu-latest
     steps:
@@ -71,7 +71,7 @@ jobs:
           binary_name: file-system-service-windows
           retry: 3
 
-  release-darwin-gui-amd64:
+  release-darwin-amd64:
     name: release darwin/amd64
     runs-on: ubuntu-latest
     steps:
@@ -85,7 +85,7 @@ jobs:
           binary_name: file-system-service-darwin-amd64
           retry: 3
 
-  release-darwin-gui-arm64:
+  release-darwin-arm64:
     name: release darwin/arm64
     runs-on: ubuntu-latest
     steps:
