@@ -2,9 +2,9 @@ package directories
 
 import (
 	"encoding/json"
-	"filesystem_service/auth"
+	"filesystem_service/auth/tokens"
 	fs "filesystem_service/customFs"
-	"filesystem_service/types"
+	"filesystem_service/customHttp"
 	"net/http"
 	"strings"
 )
@@ -13,7 +13,7 @@ func GetFileSystem(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
-	if !auth.IsAuthorized(writer, request) {
+	if !tokens.IsAuthorized(writer, request) {
 		return
 	}
 
@@ -28,12 +28,7 @@ func GetFileSystem(writer http.ResponseWriter, request *http.Request) {
 			code = 404
 		}
 
-		writer.WriteHeader(code)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    code,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, code, err)
 		return
 	}
 

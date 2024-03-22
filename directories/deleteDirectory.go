@@ -2,8 +2,9 @@ package directories
 
 import (
 	"encoding/json"
-	"filesystem_service/auth"
+	"filesystem_service/auth/tokens"
 	fs "filesystem_service/customFs"
+	"filesystem_service/customHttp"
 	"filesystem_service/types"
 	"net/http"
 	"strings"
@@ -13,7 +14,7 @@ func DeleteDirectory(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Add("Content-Type", "application/json")
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 
-	if !auth.IsAuthorized(writer, request) {
+	if !tokens.IsAuthorized(writer, request) {
 		return
 	}
 
@@ -31,12 +32,7 @@ func DeleteDirectory(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	if err != nil {
-		writer.WriteHeader(400)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    400,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 400, err)
 		return
 	}
 

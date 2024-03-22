@@ -11,7 +11,13 @@ type Flags struct {
 	portEnv *string
 	hostEnv *string
 
-	generateSignature *bool
+	generateCredentials *bool
+	updateCredentials   *bool
+	showRoles           *bool
+	showUserRole        *bool
+
+	role     *string
+	clientId *string
 }
 
 func (f *Flags) GetPort() int {
@@ -29,6 +35,29 @@ func (f *Flags) GetHost() string {
 	return *f.host
 }
 
-func (f *Flags) IsGenerateSignature() bool {
-	return !(f.generateSignature == nil || *f.generateSignature == false)
+func (f *Flags) IsGenerateCredentials() bool {
+	return !(f.generateCredentials == nil || *f.generateCredentials == false)
+}
+
+func (f *Flags) IsUpdateCredentials() bool {
+	return !(f.updateCredentials == nil || *f.updateCredentials == false)
+}
+
+func (f *Flags) IsShowRoles() bool {
+	return !(f.showRoles == nil || *f.showRoles == false)
+}
+
+func (f *Flags) IsShowUserRole() bool {
+	return !(f.showUserRole == nil || *f.showUserRole == false)
+}
+
+func (f *Flags) GetRole() string {
+	if !(f.role == nil || *f.role == "") {
+		return *f.role
+	}
+	return ""
+}
+
+func (f *Flags) GetClientId() string {
+	return *f.clientId
 }

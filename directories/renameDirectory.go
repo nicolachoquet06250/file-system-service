@@ -2,9 +2,9 @@ package directories
 
 import (
 	"encoding/json"
-	"filesystem_service/auth"
+	"filesystem_service/auth/tokens"
 	fs "filesystem_service/customFs"
-	"filesystem_service/types"
+	"filesystem_service/customHttp"
 	"net/http"
 	"strings"
 )
@@ -13,19 +13,14 @@ func RenameDirectory(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
-	if !auth.IsAuthorized(writer, request) {
+	if !tokens.IsAuthorized(writer, request) {
 		return
 	}
 
 	var body fs.Directory
 
 	if err := json.NewDecoder(request.Body).Decode(&body); err != nil {
-		writer.WriteHeader(400)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    400,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 400, err)
 		return
 	}
 
@@ -35,12 +30,7 @@ func RenameDirectory(writer http.ResponseWriter, request *http.Request) {
 	nd := fs.NewDirectory(fs.BuildDirectoryCompletePath(body))
 
 	if _, err := d.Rename(nd); err != nil {
-		writer.WriteHeader(400)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    400,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 400, err)
 		return
 	}
 

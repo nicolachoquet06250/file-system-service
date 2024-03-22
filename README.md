@@ -52,6 +52,11 @@ Click on `file-system-service-windows-{version}-windows-amd64.zip`
 file-system-service --generate-signature
 ```
 
+## Swagger
+- [Fichiers de définitions json](./swagger/swagger.json)
+- [Fichiers de définitions yaml](./swagger/swagger.yaml)
+- [Swagger UI accessible ici](http://localhost:3000/swagger)
+
 ## API Reference
 
 #### Check Validity

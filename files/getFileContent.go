@@ -1,10 +1,9 @@
 package files
 
 import (
-	"encoding/json"
-	"filesystem_service/auth"
+	"filesystem_service/auth/tokens"
 	fs "filesystem_service/customFs"
-	"filesystem_service/types"
+	"filesystem_service/customHttp"
 	"fmt"
 	"net/http"
 	"strings"
@@ -13,7 +12,7 @@ import (
 func GetFileContent(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 
-	if !auth.IsAuthorized(writer, request) {
+	if !tokens.IsAuthorized(writer, request) {
 		return
 	}
 
@@ -24,12 +23,7 @@ func GetFileContent(writer http.ResponseWriter, request *http.Request) {
 
 	if err != nil {
 		writer.Header().Add("Content-Type", "application/json")
-		writer.WriteHeader(400)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    400,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 400, err)
 
 		return
 	}
@@ -38,11 +32,7 @@ func GetFileContent(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Add("Content-Type", fileFormats[extension])
 	fileContent, err := file.GetContent()
 	if err != nil {
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    404,
-			Message: fmt.Sprintf("open %s not found", path),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 404, fmt.Errorf(fmt.Sprintf("open %s not found", path)))
 		return
 	}
 

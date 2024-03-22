@@ -2,7 +2,7 @@ openapi: '3.0.3'
 
 info:
   title: File system Service
-  version: 0.10.1
+  version: 1.0.0
 
 servers:
   - url: http://{host}:{port}
@@ -14,6 +14,16 @@ servers:
         description: Port where is exposed service.
 
 components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: /auth/get-token
+          scopes:
+            readwrite: lecture et ecriture
+            readonly: lecture seule
+
   requestBodies:
     FileSystemItem:
       required: true
@@ -42,7 +52,7 @@ components:
         message:
           type: string
 
-    FileSystemItem:
+    FileSystemItemWithoutExtension:
       type: object
       required:
         - type
@@ -60,6 +70,10 @@ components:
           type: string
         "symlink":
           type: string
+
+    FileSystemItemExtension:
+      type: object
+      properties:
         extension:
           type: string
           enum:
@@ -68,6 +82,35 @@ components:
             - ".pdf"
             - ".json"
             - ".xml"
+
+    FileSystemItem:
+      allOf:
+        - $ref: '#/components/schemas/FileSystemItemWithoutExtension'
+        - $ref: '#/components/schemas/FileSystemItemExtension'
+    #      required:
+    #        - type
+    #        - path
+    #        - name
+    #      properties:
+    #        type:
+    #          type: string
+    #          enum:
+    #            - "file"
+    #            - "directory"
+    #        path:
+    #          type: string
+    #        name:
+    #          type: string
+    #        "symlink":
+    #          type: string
+    #        extension:
+    #          type: string
+    #          enum:
+    #            - ""
+    #            - ".txt"
+    #            - ".pdf"
+    #            - ".json"
+    #            - ".xml"
 
     ResponseStatus:
       type: object
@@ -89,9 +132,10 @@ components:
         expires_in:
           type: integer
 
+security:
+  - oauth2: ['readonly', 'readwrite']
+
 tags:
-  - name: Auth
-    description: API Authentication
   - name: File System
     description: All concerns file system.
   - name: Files
@@ -100,72 +144,6 @@ tags:
     description: All concerns directories.
 
 paths:
-  /auth/get-token:
-    post:
-      tags:
-        - Auth
-      description: Create first token
-      parameters:
-        - name: Signature-Token
-          in: header
-          schema:
-            type: string
-          required: true
-      responses:
-        '200':
-          description: Get token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccessToken'
-        '400':
-          description: Get token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
-          description: Get token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-
-    put:
-      tags:
-        - Auth
-      description: Create new token from refresh token
-      parameters:
-        - name: Signature-Token
-          in: header
-          schema:
-            type: string
-          required: true
-        - name: Refresh-Token
-          in: header
-          schema:
-            type: string
-          required: true
-      responses:
-        '200':
-          description: Get token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccessToken'
-        '400':
-          description: Get token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
-          description: Get token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-
   /check-validity:
     get:
       description: New endpoint
@@ -194,6 +172,9 @@ paths:
         example: home/nchoquet
 
     get:
+      security:
+        - oauth2: ['readonly', 'readwrite']
+
       tags:
         - File System
 
@@ -206,7 +187,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FileSystemItem'
+                  $ref: '#/components/schemas/FileSystemItemWithoutExtension'
 
         '400':
           description: Bad Request
@@ -223,12 +204,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpError'
-  
-  /file-system:
+
+  /file-system/:
     summary: Get all content of root directory (flat)
     description: Get all elements in search directory (in root of your system)
-    
+
     get:
+      security:
+        - oauth2: ['readonly', 'readwrite']
+
       tags:
         - File System
 
@@ -240,7 +224,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FileSystemItem'
+                  $ref: '#/components/schemas/FileSystemItemWithoutExtension'
 
         '400':
           description: Bad Request
@@ -262,6 +246,9 @@ paths:
     description: Create new directory
 
     post:
+      security:
+        - oauth2: ['readonly', 'readwrite']
+
       tags:
         - Directories
 
@@ -318,6 +305,9 @@ paths:
       summary: Rename selected directory
       description: Rename selected directory
 
+      security:
+        - oauth2: ['readonly', 'readwrite']
+
       tags:
         - Directories
 
@@ -361,6 +351,9 @@ paths:
       summary: Delete a directory
       description: Delete a directory
 
+      security:
+        - oauth2: ['readonly', 'readwrite']
+
       tags:
         - Directories
 
@@ -402,6 +395,9 @@ paths:
     description: Create new file with or without content
 
     post:
+      security:
+        - oauth2: ['readonly', 'readwrite']
+
       tags:
         - Files
 
@@ -468,6 +464,9 @@ paths:
       summary: Get selected file content
       description: Get selected file content
 
+      security:
+        - oauth2: ['readonly', 'readwrite']
+
       tags:
         - Files
 
@@ -521,6 +520,9 @@ paths:
       summary: Rename selected file
       description: Rename selected file
 
+      security:
+        - oauth2: ['readonly', 'readwrite']
+
       tags:
         - Files
 
@@ -555,6 +557,9 @@ paths:
     put:
       description: Update file content
       summary: Update file content
+
+      security:
+        - oauth2: ['readonly', 'readwrite']
 
       tags:
         - Files
@@ -608,6 +613,9 @@ paths:
     delete:
       description: Delete selected file
       summary: Delete selected file
+
+      security:
+        - oauth2: ['readonly', 'readwrite']
 
       tags:
         - Files

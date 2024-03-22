@@ -1,0 +1,3 @@
+package credentials
+
+var AvailableCharacters = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789"

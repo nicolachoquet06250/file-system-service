@@ -8,7 +8,13 @@ var host = flag.String("host", "127.0.0.1", "Domaine ou IP de la machine qui exp
 var portEnv = flag.String("port-env", "", "Variable d'environement où trouver le port d'exposition de l'application.")
 var hostEnv = flag.String("host-env", "", "Variable d'environement où trouver le domaine ou l'IP de la machine qui expose le sercice.")
 
-var generateSignature = flag.Bool("generate-signature", false, "Active l'option de génération du token de signature pour l'utilisateur.")
+var generateCredentials = flag.Bool("generate-credentials", false, "Active l'option de génération des credentials pour l'utilisateur.")
+var updateCredentials = flag.Bool("update-credentials", false, "Active l'option de modification des credentials pour l'utilisateur.")
+var showUserRole = flag.Bool("show-user-role", false, "Active l'option de d'affichage du rôle de l'utilisateur.")
+
+var showRoles = flag.Bool("show-roles", false, "Afficher la liste des rôles disponibles.")
+var role = flag.String("role", "readonly", "Rensègne le rôle selectionné.")
+var clientId = flag.String("client_id", "", "Rensègne le client_id.")
 
 func GetFlags() Flags {
 	if !flag.Parsed() {
@@ -20,6 +26,11 @@ func GetFlags() Flags {
 		host,
 		portEnv,
 		hostEnv,
-		generateSignature,
+		generateCredentials,
+		updateCredentials,
+		showRoles,
+		showUserRole,
+		role,
+		clientId,
 	}
 }

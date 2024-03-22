@@ -2,8 +2,9 @@ package files
 
 import (
 	"encoding/json"
-	"filesystem_service/auth"
+	"filesystem_service/auth/tokens"
 	fs "filesystem_service/customFs"
+	"filesystem_service/customHttp"
 	"filesystem_service/types"
 	"io"
 	"net/http"
@@ -14,7 +15,7 @@ func RenameFile(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
-	if !auth.IsAuthorized(writer, request) {
+	if !tokens.IsAuthorized(writer, request) {
 		return
 	}
 
@@ -23,24 +24,14 @@ func RenameFile(writer http.ResponseWriter, request *http.Request) {
 	path := fs.GetRoot() + strings.Replace(request.PathValue("path"), "%2F", "/", -1)
 
 	if err := json.NewDecoder(request.Body).Decode(&renamedFile); err != nil {
-		writer.WriteHeader(400)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    400,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 400, err)
 		return
 	}
 
 	f := fs.NewFile(path)
 
 	if _, err := f.Rename(fs.NewFile(fs.BuildFileCompletePath(renamedFile))); err != nil {
-		writer.WriteHeader(400)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    400,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 400, err)
 		return
 	}
 
@@ -54,7 +45,7 @@ func UpdateFileContent(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
-	if !auth.IsAuthorized(writer, request) {
+	if !tokens.IsAuthorized(writer, request) {
 		return
 	}
 
@@ -66,23 +57,13 @@ func UpdateFileContent(writer http.ResponseWriter, request *http.Request) {
 
 	text, err := io.ReadAll(request.Body)
 	if err != nil {
-		writer.WriteHeader(400)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    400,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 400, err)
 		return
 	}
 	body = text
 
 	if _, err = f.SetContent(body); err != nil {
-		writer.WriteHeader(400)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    400,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 400, err)
 		return
 	}
 

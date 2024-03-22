@@ -2,9 +2,9 @@ package files
 
 import (
 	"encoding/json"
-	"filesystem_service/auth"
+	"filesystem_service/auth/tokens"
 	fs "filesystem_service/customFs"
-	"filesystem_service/types"
+	"filesystem_service/customHttp"
 	"net/http"
 )
 
@@ -31,41 +31,26 @@ func CreateFile(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Add("Content-Type", "application/json")
 
-	if !auth.IsAuthorized(writer, request) {
+	if !tokens.IsAuthorized(writer, request) {
 		return
 	}
 
 	file, content, err := getMultipartKeys(request)
 	if err != nil {
 		writer.Header().Add("Content-Type", "application/json")
-		writer.WriteHeader(400)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    400,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 400, err)
 		return
 	}
 
 	f := fs.NewFile(fs.BuildFileCompletePath(file))
 
 	if _, err = f.Create(); err != nil {
-		writer.WriteHeader(400)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    400,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 400, err)
 		return
 	}
 
 	if _, err = f.SetContent([]byte(content)); err != nil {
-		writer.WriteHeader(400)
-		response, _ := json.Marshal(&types.HttpError{
-			Code:    400,
-			Message: err.Error(),
-		})
-		_, _ = writer.Write(response)
+		customHttp.WriteError(writer, 400, err)
 		return
 	}
 
