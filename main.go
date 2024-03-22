@@ -18,7 +18,6 @@ import (
 )
 
 func main() {
-	// TODO maintenant que la génération de credentials est faite, gérer la génération et la validation de tokens.
 	if !actions.Exec() {
 		addr := customHttp.GetAddr()
 
