@@ -135,7 +135,13 @@ GET /check-validity
 POST /auth/get-token
 Accept: application/json
 Content-Type: application/json
-Signature-Token: {generated-signature}
+Authorization: Basic {base64(client_id:client_secret)}
+```
+> or
+```http request
+POST /auth/get-token?client_id=<client_id>&client_secret=<client_secret>
+Accept: application/json
+Content-Type: application/json
 ```
 ###### Response 200
 
@@ -170,7 +176,6 @@ Signature-Token: {generated-signature}
 PUT /auth/get-token
 Accept: application/json
 Content-Type: application/json
-Signature-Token: {generated-signature}
 Refresh-Token: {getted-refresh-token}
 ```
 ###### Response 200
