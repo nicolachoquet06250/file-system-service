@@ -63,7 +63,7 @@ sudo file-system-service --generate-credentials [--role <role=readonly>]
 > Update credentials
 
 ```shell
-sudo file-system-service --update-credentials --client_id [--role <role=readonly>]
+sudo file-system-service --update-credentials --client_id <client_id> [--role <role=readonly>]
 ```
 
 | flag                  | type                           | default value | optional |
