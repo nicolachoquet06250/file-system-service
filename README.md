@@ -55,10 +55,10 @@ Click on `file-system-service-windows-{version}-windows-amd64.zip`
 sudo file-system-service --generate-credentials [--role <role=readonly>]
 ```
 
-| flag                    | type                           | default value | optional |
-|-------------------------|--------------------------------|---------------|----------|
-| **generate-credential** | `boolean`                      | `false`       | **❌**    |
-| **role**                | enum (`readwrite`, `readonly`) | `readonly`    | **✔️**   |
+| <u>flag</u>             | <u>type</u>                    | <u>default value</u> | <u>optional</u> |
+|-------------------------|--------------------------------|----------------------|-----------------|
+| **generate-credential** | `boolean`                      | `false`              | **❌**           |
+| **role**                | enum (`readwrite`, `readonly`) | `readonly`           | **✔️**          |
 
 > Update credentials
 
@@ -66,11 +66,11 @@ sudo file-system-service --generate-credentials [--role <role=readonly>]
 sudo file-system-service --update-credentials --client_id <client_id> [--role <role=readonly>]
 ```
 
-| flag                  | type                           | default value | optional |
-|-----------------------|--------------------------------|---------------|----------|
-| **update-credential** | `boolean`                      | `false`       | **❌**    |
-| **client_id**         | `string`                       | `null`        | **❌**    |
-| **role**              | enum (`readwrite`, `readonly`) | `readonly`    | **✔️**   |
+| <u>flag</u>           | <u>type</u>                    | <u>default value</u> | <u>optional</u> |
+|-----------------------|--------------------------------|----------------------|-----------------|
+| **update-credential** | `boolean`                      | `false`              | **❌**           |
+| **client_id**         | `string`                       | `null`               | **❌**           |
+| **role**              | enum (`readwrite`, `readonly`) | `readonly`           | **✔️**          |
 
 
 > Show all available roles
@@ -79,9 +79,9 @@ sudo file-system-service --update-credentials --client_id <client_id> [--role <r
 sudo file-system-service --show-roles
 ```
 
-| flag           | type      | default value | optional |
-|----------------|-----------|---------------|----------|
-| **show-roles** | `boolean` | `false`       | **❌**    |
+| <u>flag</u>    | <u>type</u> | <u>default value</u> | <u>optional</u> |
+|----------------|-------------|----------------------|-----------------|
+| **show-roles** | `boolean`   | `false`              | **❌**           |
 
 
 > Show user current role
@@ -90,10 +90,10 @@ sudo file-system-service --show-roles
 sudo file-system-service --show-user-role --client_id <client_id>
 ```
 
-| flag               | type      | default value | optional |
-|--------------------|-----------|---------------|----------|
-| **show-user-role** | `boolean` | `false`       | **❌**    |
-| **client_id**      | `string`  | `null`        | **❌**    |
+| <u>flag</u>        | <u>type</u> | <u>default value</u> | <u>optional</u> |
+|--------------------|-------------|----------------------|-----------------|
+| **show-user-role** | `boolean`   | `false`              | **❌**           |
+| **client_id**      | `string`    | `null`               | **❌**           |
 
 > Start server
 
@@ -101,10 +101,10 @@ sudo file-system-service --show-user-role --client_id <client_id>
 sudo file-system-service [--host <host='127.0.0.1'>] [--port <port=3000>]
 ```
 
-| flag     | type      | default value | optional |
-|----------|-----------|---------------|----------|
-| **host** | `string`  | `127.0.0.1`   | **✔️**   |
-| **post** | `integer` | `3000`        | **✔️**   |
+| <u>flag</u> | <u>type</u> | <u>default value</u> | <u>optional</u> |
+|-------------|-------------|----------------------|-----------------|
+| **host**    | `string`    | `127.0.0.1`          | **✔️**          |
+| **post**    | `integer`   | `3000`               | **✔️**          |
 
 ## Swagger
 - [Fichiers de définitions json](./swagger/swagger.json)
