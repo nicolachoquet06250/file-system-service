@@ -87,7 +87,7 @@ sudo file-system-service --show-roles
 > Show user current role
 
 ```shell
-sudo file-system-service --show-user-role
+sudo file-system-service --show-user-role --client_id <client_id>
 ```
 
 | flag               | type      | default value | optional |
