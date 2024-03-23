@@ -135,7 +135,7 @@ GET /check-validity
 POST /auth/get-token
 Accept: application/json
 Content-Type: application/json
-Authorization: Basic {base64(client_id:client_secret)}
+Authorization: Basic {base64(<client_id>:<client_secret>)}
 ```
 > or
 ```http request
