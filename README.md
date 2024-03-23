@@ -98,7 +98,7 @@ sudo file-system-service --show-user-role --client_id <client_id>
 > Start server
 
 ```shell
-sudo file-system-service [--host <host=127.0.0.1>] [--port <port=3000>]
+sudo file-system-service [--host <host='127.0.0.1'>] [--port <port=3000>]
 ```
 
 | flag     | type      | default value | optional |
