@@ -8,7 +8,7 @@ Création d'un service en Go pour pouvoir m'y connecter via mon portfolio-apple 
 #### Linux & MacOSX
 ##### Get Last Swagger
 ```shell
-wget https://github.com/nicolachoquet06250/file-system-service/releases/download/$(curl https://api.github.com/repos/nicolachoquet06250/file-system-service/releases | jq .[0].name | sed 's/.\(.*\)/\1/' | sed 's/\(.*\)./\1/')/file-system-service.swagger.yml
+wget https://github.com/nicolachoquet06250/file-system-service/releases/download/$(curl https://api.github.com/repos/nicolachoquet06250/file-system-service/releases | jq .[0].name | sed 's/.\(.*\)/\1/' | sed 's/\(.*\)./\1/')/swagger/swagger.yaml
 ```
 
 #### Linux
@@ -47,10 +47,64 @@ Click on `file-system-service.swagger.yml`
 ##### Get Last binary
 Click on `file-system-service-windows-{version}-windows-amd64.zip`
 
-#### Generate Signature token
+### Commands
+
+> Generate credentials
+
 ```shell
-file-system-service --generate-signature
+sudo file-system-service --generate-credentials [--role <role=readonly>]
 ```
+
+| flag                    | type                           | default value | optional |
+|-------------------------|--------------------------------|---------------|----------|
+| **generate-credential** | `boolean`                      | `false`       | **❌**    |
+| **role**                | enum (`readwrite`, `readonly`) | `readonly`    | **✔️**   |
+
+> Update credentials
+
+```shell
+sudo file-system-service --update-credentials --client_id [--role <role=readonly>]
+```
+
+| flag                  | type                           | default value | optional |
+|-----------------------|--------------------------------|---------------|----------|
+| **update-credential** | `boolean`                      | `false`       | **❌**    |
+| **client_id**         | `string`                       | `null`        | **❌**    |
+| **role**              | enum (`readwrite`, `readonly`) | `readonly`    | **✔️**   |
+
+
+> Show all available roles
+
+```shell
+sudo file-system-service --show-roles
+```
+
+| flag           | type      | default value | optional |
+|----------------|-----------|---------------|----------|
+| **show-roles** | `boolean` | `false`       | **❌**    |
+
+
+> Show user current role
+
+```shell
+sudo file-system-service --show-user-role
+```
+
+| flag               | type      | default value | optional |
+|--------------------|-----------|---------------|----------|
+| **show-user-role** | `boolean` | `false`       | **❌**    |
+| **client_id**      | `string`  | `null`        | **❌**    |
+
+> Start server
+
+```shell
+sudo file-system-service [--host <host=127.0.0.1>] [--port <port=3000>]
+```
+
+| flag     | type      | default value | optional |
+|----------|-----------|---------------|----------|
+| **host** | `string`  | `127.0.0.1`   | **✔️**   |
+| **post** | `integer` | `3000`        | **✔️**   |
 
 ## Swagger
 - [Fichiers de définitions json](./swagger/swagger.json)
